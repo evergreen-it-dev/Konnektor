@@ -26,10 +26,14 @@ logger.addHandler(handler)
 
 
 
-clusterChat='YOUR_CHAT_GROUP_ID_HERE' #debug group
+clusterChat='YOUR_CHAT_GROUP_ID_HERE'
 skypeLogin="LOGIN_HERE"
 skypePass="PASS_HERE"
-slackUrl='WEBHOOK_URL_IN_SLAK_HERE' #ranoom
+slackUrl='WEBHOOK_URL_IN_SLAK_HERE'
+telegramBotToken= 'YOUR_BOT_TOKEN'
+telegramUrl = 'https://api.telegram.org/bot'+telegramBotToken+'/sendMessage'
+telegramChatId='YOUR_CHAT_ID'
+mode="Slack" #change to "Telegram" to make Skype to Telegram integration
 
 #код ниже слушает события скайпа и если пришло сообщение в нужную группу, то отправляет в слак текст сообщения
 class SkypePing(SkypeEventLoop):
@@ -37,7 +41,7 @@ class SkypePing(SkypeEventLoop):
         super(SkypePing, self).__init__(skypeLogin,  skypePass)
     def onEvent(self, event):
 
-        #print vent.msg.chatId #uncomment to get chatId 
+        #print vent.msg.chatId #uncomment to get chatId
 
         if isinstance(event, SkypeNewMessageEvent) and not event.msg.userId == self.userId:
 
@@ -46,9 +50,12 @@ class SkypePing(SkypeEventLoop):
          
             #print event.msg.raw["imdisplayname"]+' via Skype: '+event.msg.content
                 msgstr = '*' +remove_html_tags(event.msg.raw["imdisplayname"].encode('utf-8'))+' via Skype* '+remove_html_tags(event.msg.content.encode('utf-8'))
-                r = requests.post(slackUrl,data='{ "text": "'+ msgstr +  '" }')
-
-                logger.info(msgstr + '#slack resp: ' + r.content)
+                if mode=="Slack":
+                    r = requests.post(slackUrl,data='{ "text": "'+ msgstr +  '" }')
+                    logger.info(msgstr + '#slack resp: ' + r.content)
+                if mode=="Telegram":
+                    r = requests.post(telegramUrl,data='{"text":"'+msgstr+ '", "chat_id":"'+telegramChatId+'", "parse_mode":"Markdown"}')
+                    logger.info(msgstr + '#slack resp: ' + r.content)
 
 
 lp= SkypePing();

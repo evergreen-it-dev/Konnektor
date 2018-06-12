@@ -53,7 +53,7 @@ def listen_skype():
 
         return '{"OK":true}'
 
-#API call to send Skype message, do login and sends message, uncomment print statesments to debug
+#API call to send Skype message, does login and sends message, uncomment print statesments to debug
 @app.route('/listen/send_skype', methods=['GET', 'POST'])
 def send_skype():
     if request.method == 'POST':
@@ -77,6 +77,30 @@ def send_skype():
                            content='<b>' + _user["user"]["real_name"] + ' via Slack: </b>' + remove_html_tags(_json["event"][
                                "text"]))  # plain-text message
                 app.logger.info(_user["user"]["real_name"] + ' via Slack: ' + remove_html_tags(_json["event"]["text"]))
+                return '{"OK":true}'
+
+        return '{"OK":true}'
+
+
+#API call to send Skype message from Telegram, does login and sends message, uncomment print statesments to debug
+@app.route('/listen/send_skype_telegram', methods=['GET', 'POST'])
+def send_skype_telegram():
+    if request.method == 'POST':
+        app.logger.info('/send telegram request:' + "".join(request.data.splitlines()))
+        _json = request.get_json(force=True)
+
+        if _json["event"]["type"] == "message":
+            if not 'subtype' in _json["event"]:
+
+
+                sk = Skype(skypeLogin, skypePass, 'session.tmp')  # connect to Skype
+                chats = sk.chats  # your conversations
+                ch = chats.chat(clusterChat)
+
+                ch.sendRaw(messagetype="RichText", contenttype="text",
+                           content='<b>' + _json["event"]["user"] + ' via Telegram: </b>' + remove_html_tags(_json["event"][
+                               "text"]))  # plain-text message
+                app.logger.info(_json["event"]["user"] + ' via Telegram: ' + remove_html_tags(_json["event"]["text"]))
                 return '{"OK":true}'
 
         return '{"OK":true}'
