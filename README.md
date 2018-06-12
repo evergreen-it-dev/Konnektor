@@ -34,7 +34,8 @@ Manual (Corezoid https://corezoid.com account required!)
 
 **Contacts**
 
-If you have any questions or help with Konnektor setup, contact support@evergreens.com.ua
+If you have any questions or need help with Konnektor setup, contact support@evergreens.com.ua
+
 Looking for more integrations? Check http://evergreen.team/en/box-producs/konnektor.html 
 
 
