@@ -36,7 +36,7 @@ def remove_html_tags(text):
 #you can setup this route in Slack but we strongly  recommend to use Corezoid instead
 @app.route('/listen/skype', methods=['GET', 'POST'])
 def listen_skype():
-     if request.method == 'POST'
+     if request.method == 'POST':
         app.logger.info('/listen request:'+ "".join( request.data.splitlines()))
         _json =  request.get_json(force=True)
 
