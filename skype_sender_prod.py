@@ -18,13 +18,13 @@ jsonpickle.set_encoder_options('json', ensure_ascii=False);
 app = Flask(__name__)
 
 
-clusterChat='YOUR_CHAT_GROUP_ID_HERE'
-skypeLogin="LOGIN_HERE"
+clusterChat='YOUR_CHAT_GROUP_ID_HERE' 
+skypeLogin="LOGIN_HERE" #for newly registred skypes it usually email, not login!
 skypePass="PASS_HERE"
 slackGetUserUrl='https://slack.com/api/users.info'
 slackToken='SLACK_TOCKEN_HERE'
 
-#это оформляем отдельным прилодением, которое вызывается по событию из слака. учесть что подключения надо кешировать
+#это оформляем отдельным приложением, которое вызывается по событию из слака. учесть что подключения надо кешировать
 
 
 def remove_html_tags(text):
