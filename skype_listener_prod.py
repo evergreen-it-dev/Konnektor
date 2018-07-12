@@ -41,7 +41,7 @@ class SkypePing(SkypeEventLoop):
         super(SkypePing, self).__init__(skypeLogin,  skypePass)
     def onEvent(self, event):
 
-        #print vent.msg.chatId #uncomment to get chatId
+        #print event.msg.chatId #uncomment to get chatId
 
         if isinstance(event, SkypeNewMessageEvent) and not event.msg.userId == self.userId:
 
