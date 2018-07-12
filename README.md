@@ -17,6 +17,7 @@ Manual:
 - If you choose Corezoid import SlackHostProcess into your Corezoid account and use Connect to Messnger -> Slack http://prntscr.com/jtpegi Event Subscription webhook http://prntscr.com/jtpepb as event listener
 - if you will not use Telegram - live http://prntscr.com/ju8ahm with default values
 - Change your Skype User login and password, change cluster chat ID  to your chat ID, set Slack webhook URL in .py files
+- To find chat ID do the folowing: live cluster chat ID blank, run skype listener and add Skype user to group you want to listen, http://prntscr.com/k5hatk and you'll get chat id.
 - Run Flask with Gunicorn & Supervisor for skype_sender_prod.py and python with supervisor for skype_listener_prod.py 
 
 Skype or Slack to Telegram integration
