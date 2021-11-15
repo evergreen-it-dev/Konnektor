@@ -36,76 +36,79 @@ def remove_html_tags(text):
 #you can setup this route in Slack but we strongly  recommend to use Corezoid instead
 @app.route('/listen/skype', methods=['GET', 'POST'])
 def listen_skype():
-     if request.method == 'POST':
-        app.logger.info('/listen request:'+ "".join( request.data.splitlines()))
-        _json =  request.get_json(force=True)
+    if request.method != 'POST':
+        return
 
-        if "challenge" in _json:
-            return _json["challenge"]
+    app.logger.info('/listen request:'+ "".join( request.data.splitlines()))
+    _json =  request.get_json(force=True)
 
+    if "challenge" in _json:
+        return _json["challenge"]
 
-
-        if _json["event"]["type"] == "message":
-            if not 'sybtype' in  _json["event"]:
-                r = requests.post(corezoidUrl,data=request.data)
-                app.logger.info('/corezoid answer:' + "".join(r.content.splitlines()))
-                return '{"OK":true}'
+    if _json["event"]["type"] == "message" and 'sybtype' not in _json["event"]:
+        r = requests.post(corezoidUrl,data=request.data)
+        app.logger.info('/corezoid answer:' + "".join(r.content.splitlines()))
 
         return '{"OK":true}'
+    
+    return '{"OK":true}'    
 
 #API call to send Skype message, does login and sends message, uncomment print statesments to debug
 @app.route('/listen/send_skype', methods=['GET', 'POST'])
 def send_skype():
-    if request.method == 'POST':
-        app.logger.info('/send request:' + "".join(request.data.splitlines()))
-        _json = request.get_json(force=True)
+    if request.method != 'POST':
+        return
 
-        if _json["event"]["type"] == "message":
-            if not 'subtype' in _json["event"]:
-                if _json["production"]:
-                    clusterChat=clusterChat_prod
+    app.logger.info('/send request:' + "".join(request.data.splitlines()))
+    _json = request.get_json(force=True)
 
-                sk = Skype(skypeLogin, skypePass, 'session.tmp')  # connect to Skype
-                chats = sk.chats  # your conversations
-                ch = chats.chat(clusterChat)
+    if _json["event"]["type"] == "message" and 'subtype' not in _json["event"]:
+        if _json["production"]:
+            clusterChat=clusterChat_prod
 
-                r = requests.get(slackGetUserUrl, params={"token": slackToken, "user": _json["event"]["user"]})
-                # print r.content
-                _user = jsonpickle.decode(r.content)
-                # ch.sendMsg( _user["user"]["real_name"] + ' via Slack: ' + _json["event"]["text"]) # plain-text message
-                ch.sendRaw(messagetype="RichText", contenttype="text",
-                           content='<b>' + _user["user"]["real_name"] + ' via Slack: </b>' + remove_html_tags(_json["event"][
-                               "text"]))  # plain-text message
-                app.logger.info(_user["user"]["real_name"] + ' via Slack: ' + remove_html_tags(_json["event"]["text"]))
-                return '{"OK":true}'
+        sk = Skype(skypeLogin, skypePass, 'session.tmp')  # connect to Skype
+        chats = sk.chats  # your conversations
+        ch = chats.chat(clusterChat)
+
+        r = requests.get(slackGetUserUrl, params={"token": slackToken, "user": _json["event"]["user"]})
+        # print r.content
+        _user = jsonpickle.decode(r.content)
+        # ch.sendMsg( _user["user"]["real_name"] + ' via Slack: ' + _json["event"]["text"]) # plain-text message
+        ch.sendRaw(messagetype="RichText", contenttype="text",
+                   content='<b>' + _user["user"]["real_name"] + ' via Slack: </b>' + remove_html_tags(_json["event"][
+                       "text"]))  # plain-text message
+        app.logger.info(_user["user"]["real_name"] + ' via Slack: ' + remove_html_tags(_json["event"]["text"]))
 
         return '{"OK":true}'
+
+    return '{"OK":true}'
 
 
 #API call to send Skype message from Telegram, does login and sends message, uncomment print statesments to debug
 @app.route('/listen/send_skype_telegram', methods=['GET', 'POST'])
 def send_skype_telegram():
-    if request.method == 'POST':
-        app.logger.info('/send telegram request:' + "".join(request.data.splitlines()))
-        _json = request.get_json(force=True)
+    if request.method != 'POST':
+        return
 
-        if _json["event"]["type"] == "message":
-            if not 'subtype' in _json["event"]:
+    app.logger.info('/send telegram request:' + "".join(request.data.splitlines()))
+    _json = request.get_json(force=True)
 
+    if _json["event"]["type"] == "message" and 'subtype' not in _json["event"]:
 
-                sk = Skype(skypeLogin, skypePass, 'session.tmp')  # connect to Skype
-                chats = sk.chats  # your conversations
-                ch = chats.chat(clusterChat)
+        sk = Skype(skypeLogin, skypePass, 'session.tmp')  # connect to Skype
+        chats = sk.chats  # your conversations
+        ch = chats.chat(clusterChat)
 
-                ch.sendRaw(messagetype="RichText", contenttype="text",
-                           content='<b>' + _json["event"]["user"] + ' via Telegram: </b>' + remove_html_tags(_json["event"][
-                               "text"]))  # plain-text message
-                app.logger.info(_json["event"]["user"] + ' via Telegram: ' + remove_html_tags(_json["event"]["text"]))
-                return '{"OK":true}'
+        ch.sendRaw(messagetype="RichText", contenttype="text",
+                   content='<b>' + _json["event"]["user"] + ' via Telegram: </b>' + remove_html_tags(_json["event"][
+                       "text"]))  # plain-text message
+        app.logger.info(_json["event"]["user"] + ' via Telegram: ' + remove_html_tags(_json["event"]["text"]))
 
         return '{"OK":true}'
 
+    return '{"OK":true}'
 
+    
 handler = RotatingFileHandler('skype_outgoing.log', maxBytes=20000, backupCount=3)
 handler.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
